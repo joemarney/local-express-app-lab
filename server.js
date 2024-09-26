@@ -54,42 +54,77 @@ app.post("/songs", (req, res) => {
   }
 });
 // UPDATE
+// app.put("/songs/:songId", (req, res) => {
+//   try {
+//     const songId = Number(req.params.songId);
+//     const songIndex = songs.findIndex(({ id }) => id === songId);
+//     if (songId >= 0 && songId <= songs.length) {
+//       songs.splice(songIndex, 1, req.body);
+//       req.body.id = songId;
+//       return res.send(`Song ${songId} updated!`);
+//     } else {
+//       return res
+//         .status(404)
+//         .send(`Song you wanted to update could not be found`);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).send("Error");
+//   }
+// });
+
+// SOLUTION FROM SAM - UPDATE
 app.put("/songs/:songId", (req, res) => {
   try {
     const songId = Number(req.params.songId);
-    const songIndex = songs.findIndex(({ id }) => id === songId);
-    if (songId >= 0 && songId <= songs.length) {
-      songs.splice(songIndex, 1, req.body);
-      req.body.id = songId;
-      return res.send(`Song ${songId} updated!`);
-    } else {
-      return res
-        .status(404)
-        .send(`Song you wanted to update could not be found`);
+    const retrievedSong = songs.find((song) => {
+      return song.id === songId;
+    });
+    if (!songId) {
+      return res.status(404).send("Song not found");
     }
+    Object.assign(retrievedSong, req.body);
+    return res.send(retrievedSong);
   } catch (error) {
     console.log(error);
     return res.status(500).send("Error");
   }
 });
+
 // DELETE
+// app.delete("/songs/:songId", (req, res) => {
+//   try {
+//     const songId = Number(req.params.songId);
+//     const songIndex = songs.findIndex(({ id }) => id === songId);
+//     if (songId >= 0 && songId <= songs.length) {
+//       songs.splice(songIndex, 1);
+//       return res.send(`Song id: ${songId} deleted.`);
+//     } else {
+//       return res
+//         .status(404)
+//         .send(`Song you wanted to delete could not be found`);
+//     }
+//   } catch (error) {
+//     console.log(error);
+//     return res.status(500).send("Error");
+//   }
+// });
+
+// SOLUTION FROM SAM - DELETE
 app.delete("/songs/:songId", (req, res) => {
   try {
     const songId = Number(req.params.songId);
-    const songIndex = songs.findIndex(({ id }) => id === songId);
-    if (songId >= 0 && songId <= songs.length) {
-      songs.splice(songIndex, 1);
-      return res.send(`Song id: ${songId} deleted.`);
-    } else {
-      return res
-        .status(404)
-        .send(`Song you wanted to delete could not be found`);
-    }
+    const songIndex = songs.findIndex((song) => {
+      return song.id === songId;
+    });
+    songs.splice(songIndex, 1);
+    return res.sendStatus(204);
   } catch (error) {
     console.log(error);
     return res.status(500).send("Error");
   }
 });
+
 // 404 HANDLER
 app.use("*", (req, res) => {
   return res.status(404).send("Route Not Found");
